@@ -33,13 +33,7 @@ WiFiClient wifi;
 HttpClient client = HttpClient(wifi, serverAddress, port);
 int status = WL_IDLE_STATUS;
 
-int red_state; // 0 = red, 1 = green
-int green_state; // 0 = red, 1 = green
-int prev_red_state; // 0 = red, 1 = green
-int prev_green_state;
-
-bool greenPressed = false;
-bool redPressed = false;
+bool pinched = false;
 
 void setup() {
 
@@ -74,24 +68,17 @@ void post(int value) {
 }
 
 void loop() {
-  red_state = digitalRead(2);
-  green_state = digitalRead(3);
-  // read the pushbutton input:
-   if (red_state > prev_red_state && !redPressed) { // press red button
-    //Serial.println(0);
-    redPressed = true;
-    greenPressed = false;
+  int sensorValue = analogRead(A0);
+  // Serial.println(sensorValue);
+
+  if (sensorValue > 200 && !pinched) {
+    pinched = true;
     post(0);
-   } 
-   if (green_state > prev_green_state && !greenPressed) { // press green button
-    //Serial.println(1);
-    greenPressed = true;
-    redPressed = false;
+  } else if (sensorValue <= 200 && pinched) {
+    pinched = false;
     post(1);
-   }
-   prev_red_state = red_state;
-   prev_green_state = green_state;
-   delay(50);
+  }
+  delay(20);
 }
 
 
